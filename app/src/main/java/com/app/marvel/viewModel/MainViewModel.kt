@@ -4,16 +4,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.marvel.Repository
 import com.app.marvel.data.CharacterInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(private val repository: Repository):ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
 
     private val _APIState = MutableStateFlow<APITask>(APITask.Init)
     val APIState : StateFlow<APITask> = _APIState.asStateFlow()
 
+    init {
+        getAll()
+    }
 
     fun getAll(limit:Int=90){
         _APIState.value = APITask.Loading
