@@ -1,12 +1,9 @@
 package com.app.marvel.viewModel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.compose.runtime.collectAsState
 import com.app.marvel.Repository
 import com.app.marvel.api.CharacterResponse
 import com.app.marvel.api.Data
-import com.app.marvel.api.RetrofitInstance
-import com.app.marvel.data.CharacterInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking

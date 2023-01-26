@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModelFactory= MainFactory(Repository())
-        viewModel = ViewModelProvider(this,viewModelFactory).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this,viewModelFactory)[MainViewModel::class.java]
         viewModel.getAll()
 
         setContent {
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(viewModel: MainViewModel) {
     Column {
 
-        TopAppBar() {
+        TopAppBar {
             Text(
                 text = "Marvel",
                 modifier = Modifier
@@ -68,12 +68,12 @@ fun MainScreen(viewModel: MainViewModel) {
             val apiState by viewModel.APIState.collectAsState()
 
             when (apiState) {
-                is APITask.Loading -> Text(text = "Loading",)
+                is APITask.Loading -> Text(text = "Loading")
                 is APITask.Response.Ok -> (apiState as APITask.Response.Ok).payload.forEach {
                     Divider(startIndent = 50.dp)
                     CharItem(it)
                 }
-                is APITask.Response.error -> Text(text = (apiState as APITask.Response.error).error)
+                is APITask.Response.Error -> Text(text = (apiState as APITask.Response.Error).error)
             }
         }
     }
@@ -97,7 +97,7 @@ fun CharItem(characterInfo: CharacterInfo) {
                 contentScale = ContentScale.FillWidth
             )
         }
-        Column() {
+        Column {
             Text(
                 text = characterInfo.Name, style = MaterialTheme.typography.h6
 

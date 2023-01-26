@@ -6,7 +6,7 @@ sealed class APITask{
     object Init: APITask()
     object Loading: APITask()
     sealed class Response: APITask(){
-        data class error(val error:String): Response()
+        data class Error(val error:String): Response()
         data class Ok(val payload:List<CharacterInfo>): Response()
     }
 }

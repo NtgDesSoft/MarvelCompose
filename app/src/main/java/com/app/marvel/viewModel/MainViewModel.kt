@@ -23,8 +23,8 @@ class MainViewModel(private val repository: Repository):ViewModel() {
 
             if (response.isSuccessful) {
                 _APIState.value = APITask.Response.Ok(
-                    response.body()?.let {
-                        it.data.results.map {
+                    response.body()?.let { characterResponse ->
+                        characterResponse.data.results.map {
                             CharacterInfo(
                                 Name = it.name,
                                 Details = it.description,
@@ -33,7 +33,7 @@ class MainViewModel(private val repository: Repository):ViewModel() {
                         }
                     } ?: emptyList()
                 )
-            } else _APIState.value = APITask.Response.error(response.message())
+            } else _APIState.value = APITask.Response.Error(response.message())
         }
     }
 }
