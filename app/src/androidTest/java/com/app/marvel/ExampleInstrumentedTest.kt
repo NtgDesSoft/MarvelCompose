@@ -1,12 +1,10 @@
 package com.app.marvel
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -17,8 +15,8 @@ import org.junit.Assert.*
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
-        // Context of the app under test.
+        // Context of the App under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.app.marvel", appContext.packageName)
+        assertEquals("com.App.marvel", appContext.packageName)
     }
 }
