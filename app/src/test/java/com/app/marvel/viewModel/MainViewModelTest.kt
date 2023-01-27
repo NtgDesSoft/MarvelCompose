@@ -1,78 +1,99 @@
 package com.app.marvel.viewModel
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.app.marvel.Repository
+import com.app.marvel.RepositoryImpl
+import com.app.marvel.api.CharacterDetail
 import com.app.marvel.api.CharacterResponse
 import com.app.marvel.api.Data
+import com.app.marvel.api.Thumbnail
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
 import retrofit2.Response
 
-@ExperimentalCoroutinesApi
-@RunWith(JUnit4::class)
 class MainViewModelTest {
-
     private val testDispatcher = TestCoroutineDispatcher()
     lateinit var viewModel: MainViewModel
-    lateinit var repository: Repository
-
-    @Mock
-    lateinit var states: APITask
-
-    @get:Rule
-    val instantTaskExecutionRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+    lateinit var repository: RepositoryImpl
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
         Dispatchers.setMain(testDispatcher)
-        repository = Repository()
+        repository = mockk()
         viewModel = MainViewModel(repository)
     }
 
-
     @Test
-    fun getAll() {
+    fun `get data`() {
         runBlocking {
-            Mockito.`when`(repository.getAll(90))
-                .thenReturn(Response.success(characterResponse))
+            coEvery { repository.getAll(any()) } returns (Response.success(characterResponse))
 
             viewModel.getAll(90)
-            val result = viewModel.APIState.value
-            assertEquals(
-                result, APITask.Response.Ok(listOf())
-            )
+
+            assertThat((viewModel.APIState.value as APITask.Response.Ok).payload.size).isGreaterThan(0)
         }
     }
 
     @Test
-    fun `getAll empty list`() {
+    fun `get character data`() {
         runBlocking {
-            Mockito.`when`(repository.getAll(90))
-                .thenReturn(Response.success(characterResponse))
+            coEvery { repository.getAll(any()) } returns (Response.success(characterResponse))
 
-            viewModel.getAll(90)
-            val result = viewModel.APIState.value
-            assertEquals(result, APITask.Response.Ok(emptyList()))
+            viewModel.getAll()
+
+            assertThat((viewModel.APIState.value as APITask.Response.Ok).payload[0].Name).isEqualTo(characterA.name)
+        }
+    }
+
+    @Test
+    fun `get empty list if remote data available`() {
+        runBlocking {
+            coEvery { repository.getAll(any()) } returns (Response.success(characterResponse.copy(data = dataEmpty)))
+
+            viewModel.getAll()
+
+            coVerify { repository.getAll(any()) }
+
+            assertThat(viewModel.APIState.value).isEqualTo(APITask.Response.Ok(emptyList()))
+        }
+    }
+
+    @Test
+    fun `Verify that get all was called with limit 5`() {
+        runBlocking {
+            coEvery { repository.getAll(any()) } returns (Response.success(characterResponse.copy(data = dataEmpty)))
+
+            viewModel.getAll(5)
+
+            coVerify { repository.getAll(5) }
         }
     }
 
 }
 
+val characterA = CharacterDetail(
+    description = "some information",
+    id = 2,
+    name = "characterA=Bomb",
+    thumbnail = Thumbnail("", ""),
+    resourceURI = ""
+)
 
 val data = Data(
+    count = 1,
+    limit = 90,
+    offset = 0,
+    total = 1,
+    results = listOf(characterA)
+)
+
+val dataEmpty = Data(
     count = 0,
     limit = 90,
     offset = 0,
