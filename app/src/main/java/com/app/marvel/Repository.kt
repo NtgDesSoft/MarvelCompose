@@ -13,6 +13,7 @@ class RepositoryImpl @Inject constructor(
     private val remoteData: CharacterEndPoints
 ) : Repository {
     override suspend fun getAll(limit: Int): Response<CharacterResponse> {
+        val limit =if (BuildConfig.FETCH_LIMIT==0) limit else BuildConfig.FETCH_LIMIT
         return remoteData.getAllCharacters(limit)
     }
 }

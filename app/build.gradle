@@ -23,6 +23,19 @@ android {
         }
     }
 
+    flavorDimensions 'default'
+    productFlavors {
+        Full {
+            dimension 'default'
+            buildConfigField 'int', 'FETCH_LIMIT', '0'
+        }
+        Trial {
+            dimension 'default'
+            applicationId "com.app.marvel.trial"
+            buildConfigField 'int', 'FETCH_LIMIT', '3'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
